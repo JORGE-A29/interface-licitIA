@@ -1,0 +1,196 @@
+╔═══════════════════════════════════════════════════════════════════════════════╗
+║                      LICITIA - DASHBOARD PROFESIONAL SAAS                     ║
+╚═══════════════════════════════════════════════════════════════════════════════╝
+
+📦 ESTRUCTURA COMPLETAMENTE FUNCIONAL
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+src/
+│
+├── 📁 components/
+│   ├── 📁 layout/
+│   │   ├── Sidebar.tsx           ✅ Sidebar colapsable con navegación
+│   │   ├── Navbar.tsx            ✅ Navbar con búsqueda y notificaciones
+│   │   ├── ProfileDropdown.tsx   ✅ Dropdown de perfil funcional
+│   │   └── DashboardLayout.tsx   ✅ Layout principal responsivo
+│   │
+│   ├── 📁 cards/
+│   │   ├── ActionCard.tsx        ✅ Tarjetas de acciones con gradientes
+│   │   ├── StatsCard.tsx         ✅ Tarjetas de estadísticas
+│   │   └── ActivityCard.tsx      ✅ Tarjetas de actividad con estado
+│   │
+│   ├── 📁 charts/
+│   │   └── DashboardCharts.tsx   ✅ Gráficos (línea, pastel, barras)
+│   │
+│   └── 📁 styles/
+│       ├── sidebar.css           ✅ Estilos del sidebar
+│       ├── navbar.css            ✅ Estilos del navbar y dropdown
+│       ├── cards.css             ✅ Estilos de tarjetas
+│       ├── charts.css            ✅ Estilos de gráficos
+│       └── dashboard-layout.css  ✅ Estilos del layout principal
+│
+├── 📁 pages/
+│   ├── Dashboard.tsx             ✅ Página principal del dashboard
+│   ├── Search.tsx                🔄 Placeholder (Buscar licitaciones)
+│   ├── Analyze.tsx               🔄 Placeholder (Analizar licitación)
+│   ├── Company.tsx               🔄 Placeholder (Mi empresa)
+│   ├── AIAssistant.tsx           🔄 Placeholder (Asistente IA)
+│   ├── History.tsx               🔄 Placeholder (Historial)
+│   ├── Settings.tsx              🔄 Placeholder (Configuración)
+│   ├── Help.tsx                  🔄 Placeholder (Ayuda)
+│   ├── Profile.tsx               🔄 Placeholder (Mi perfil)
+│   ├── Security.tsx              🔄 Placeholder (Seguridad)
+│   │
+│   └── 📁 styles/
+│       └── dashboard.css         ✅ Estilos de página dashboard
+│
+├── 📁 services/
+│   ├── api.ts                    ✅ Axios configurado con interceptores
+│   ├── authService.ts            ✅ Servicio de autenticación
+│   └── dashboardService.ts       ✅ Servicio de datos del dashboard
+│
+├── 📁 context/
+│   └── AuthContext.tsx           ✅ Context de autenticación global
+│
+├── App.tsx                       ✅ App principal con React Router
+├── main.tsx                      ✅ Punto de entrada
+└── index.css                     ✅ Estilos globales
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🎯 CARACTERÍSTICAS IMPLEMENTADAS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✅ SIDEBAR
+  ├── Colapsable con animación suave
+  ├── Navegación con React Router
+  ├── Logout funcional
+  ├── Responsivo (oculto en móvil)
+  └── Iconos modernos de lucide-react
+
+✅ NAVBAR
+  ├── Barra de búsqueda
+  ├── Notificaciones con badges
+  ├── Mensajes con contador
+  ├── Perfil de usuario
+  ├── Responsive en todos los tamaños
+  └── Minimalista y elegante
+
+✅ DROPDOWN DE PERFIL
+  ├── Avatar del usuario
+  ├── Nombre y email
+  ├── Mi Perfil (funcional)
+  ├── Configuración (funcional)
+  ├── Seguridad (funcional)
+  ├── Cerrar sesión (funcional)
+  └── Click outside para cerrar
+
+✅ DASHBOARD PRINCIPAL
+  ├── Saludo dinámico por hora
+  ├── Tarjetas de estadísticas
+  ├── Tarjetas de acciones
+  ├── Licitaciones recientes
+  ├── Actividad reciente
+  ├── Gráficos (Recharts)
+  └── Completamente responsivo
+
+✅ AUTENTICACIÓN
+  ├── Context API
+  ├── Protected Routes
+  ├── Tokens JWT
+  ├── Local Storage
+  └── Redirección automática
+
+✅ API INTEGRATION
+  ├── Axios configurado
+  ├── Interceptores de request/response
+  ├── Manejo de errores 401
+  ├── Fallback data
+  └── Servicios modularizados
+
+✅ DISEÑO & UX
+  ├── Paleta azul moderna
+  ├── Animaciones suaves
+  ├── Transiciones elegantes
+  ├── Hover effects
+  ├── Completamente responsive
+  └── Mobile-first approach
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📚 DEPENDENCIAS INSTALADAS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✅ react (^18.3.1)
+✅ react-dom (^18.3.1)
+✅ react-router-dom (^6.x)
+✅ axios (^1.x)
+✅ recharts (^2.x)
+✅ lucide-react (^0.344.0)
+✅ @supabase/supabase-js (^2.57.4)
+✅ tailwindcss (^3.4.1)
+✅ typescript (^5.5.3)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🚀 COMANDOS DISPONIBLES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+npm run dev         → Iniciar servidor de desarrollo
+npm run build       → Build para producción
+npm run lint        → Validar código
+npm run typecheck   → Verificar tipos TypeScript
+npm run preview     → Vista previa del build
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🔐 RUTAS PROTEGIDAS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+/                   → Redirige a /dashboard o /login
+/dashboard          → Dashboard principal (protegido)
+/search             → Buscar licitaciones (protegido)
+/analyze            → Analizar licitación (protegido)
+/company            → Mi empresa (protegido)
+/ai-assistant       → Asistente IA (protegido)
+/history            → Historial (protegido)
+/settings           → Configuración (protegido)
+/help               → Ayuda (protegido)
+/profile            → Mi perfil (protegido)
+/security           → Seguridad (protegido)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🎨 PALETA DE COLORES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Azul Primario       #3b82f6   (Principal, botones, acciones)
+Azul Oscuro         #1e40af   (Sidebar, gradientes)
+Verde Secundario    #10b981   (Éxito, positivo)
+Naranja Terciario   #f59e0b   (Advertencia, atención)
+Púrpura Cuaternario #8b5cf6   (Información, IA)
+Rojo de Error       #ef4444   (Peligro, logout)
+Grises Neutros      #1f2937 a #f9fafb (Texto, fondos)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📱 RESPONSIVE DESIGN
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✅ Desktop (1200px+)    → Sidebar lateral fijo, layout completo
+✅ Tablet (768-1199px)  → Sidebar colapsable, grid adaptado
+✅ Mobile (<768px)      → Sidebar oculto, menú hamburguesa
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📖 DOCUMENTACIÓN
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Ver DASHBOARD_SETUP.md para documentación completa.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// Línea 35 del AuthContext.tsx — cambia esto:
+const login = async (email: string, _password: string) => {
+
+// Por esto:
+const login = async (email: string, password: string) => {
