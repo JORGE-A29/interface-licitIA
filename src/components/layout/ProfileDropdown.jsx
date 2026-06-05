@@ -1,11 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {
-  User,
-  Settings,
-  Shield,
-  LogOut,
-} from 'lucide-react';
+import { User, Settings, Shield, LogOut } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import '../styles/navbar.css';
 
@@ -20,25 +15,23 @@ const ProfileDropdown = ({ onClose }) => {
         onClose();
       }
     };
-
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [onClose]);
 
   const handleLogout = async () => {
     await logout();
-    navigate('/login');
+    window.location.href = '/login';
   };
 
   const menuItems = [
-    { icon, label: 'Mi Perfil', action: () => navigate('/profile') },
-    { icon, label: 'Configuración', action: () => navigate('/settings') },
-    { icon, label: 'Seguridad', action: () => navigate('/security') },
+    { icon: User,     label: 'Mi Perfil',     action: () => navigate('/profile') },
+    { icon: Settings, label: 'Configuración', action: () => navigate('/settings') },
+    { icon: Shield,   label: 'Seguridad',     action: () => navigate('/security') },
   ];
 
   return (
     <div className="profile-dropdown" ref={dropdownRef}>
-      {/* User Info */}
       <div className="dropdown-header">
         <div className="avatar-large">
           {user?.avatar ? (
@@ -57,17 +50,10 @@ const ProfileDropdown = ({ onClose }) => {
 
       <div className="dropdown-divider" />
 
-      {/* Menu Items */}
       <div className="dropdown-menu">
         {menuItems.map((item, index) => (
-          <button
-            key={index}
-            className="dropdown-item"
-            onClick={() => {
-              item.action();
-              onClose();
-            }}
-          >
+          <button key={index} className="dropdown-item"
+            onClick={() => { item.action(); onClose(); }}>
             <item.icon size={18} />
             <span>{item.label}</span>
           </button>
@@ -76,7 +62,6 @@ const ProfileDropdown = ({ onClose }) => {
 
       <div className="dropdown-divider" />
 
-      {/* Logout */}
       <button className="dropdown-item danger" onClick={handleLogout}>
         <LogOut size={18} />
         <span>Cerrar sesión</span>

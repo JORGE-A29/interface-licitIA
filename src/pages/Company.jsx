@@ -213,7 +213,7 @@ const Company = () => {
                 {ENTITIES.map((entity, i) => (
                   <div className="entity-item" key={i}>
                     <div className="entity-left">
-                      <div className="entity-dot" style={{ background: city.color }} />
+                      <div className="entity-dot" style={{ background: entity.color }} />
                       <span className="entity-name">{entity.name}</span>
                     </div>
                     <span className="entity-contracts">{entity.contratos} contratos</span>
