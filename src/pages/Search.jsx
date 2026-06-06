@@ -16,7 +16,7 @@ const handleSearch = async (e) => {
   try {
     const params = {};
     if (query) params.descripcion = query;
-    if (filters.municipio) params.municipio = filters.municipio.toUpperCase();
+    if (filters.municipio) params.municipio = filters.municipio;
     if (filters.estado) params.estado = filters.estado;
 
     const response = await api.get('/licitaciones', { params });
@@ -57,7 +57,13 @@ const handleSearch = async (e) => {
           <select value={filters.estado} onChange={e => setFilters(f => ({ ...f, estado: e.target.value }))}
             style={{ padding: '10px 12px', border: '1px solid #e5e7eb', borderRadius: 8, fontSize: 14 }}>
             <option value="">Todos</option>
-            <option value="Activo">Activo</option>
+            <option value="En ejecución">En ejecución</option>
+            <option value="terminado">Terminado</option>
+            <option value="Aprobado">Aprobado</option>
+            <option value="Cancelado">Cancelado</option>
+            <option value="Suspendido">Suspendido</option>
+            <option value="Prorrogado">Prorrogado</option>
+            <option value="Modificado">Modificado</option>
             <option value="Cerrado">Cerrado</option>
           </select>
           <input
@@ -119,17 +125,22 @@ const handleSearch = async (e) => {
     {lic.estado_contrato || 'Sin estado'}
   </span>
   {lic.urlproceso ? (
-    <a href={lic.urlproceso} target="_blank" rel="noopener noreferrer"
-      style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 13, color: '#2563eb', textDecoration: 'none' }}>
-      <ExternalLink size={13} /> Ver en SECOP II
-    </a>
-  ) : lic.proceso_de_compra ? (
-    <a href={`https://community.secop.gov.co/Public/Tendering/OpportunityDetail/Index?noticeUID=${lic.proceso_de_compra}`}
-      target="_blank" rel="noopener noreferrer"
-      style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 13, color: '#2563eb', textDecoration: 'none' }}>
-      <ExternalLink size={13} /> Ver en SECOP II
-    </a>
-  ) : null}
+  <a 
+    href={String(lic.urlproceso).startsWith('http') ? String(lic.urlproceso) : `https://${lic.urlproceso}`}
+    target="_blank" 
+    rel="noopener noreferrer"
+    style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 13, color: '#2563eb', textDecoration: 'none' }}>
+    <ExternalLink size={13} /> Ver en SECOP II
+  </a>
+) : lic.proceso_de_compra ? (
+  <a 
+    href={`https://community.secop.gov.co/Public/Tendering/OpportunityDetail/Index?noticeUID=${lic.proceso_de_compra}`}
+    target="_blank" 
+    rel="noopener noreferrer"
+    style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 13, color: '#2563eb', textDecoration: 'none' }}>
+    <ExternalLink size={13} /> Ver en SECOP II
+  </a>
+) : null}
 </div>
               </div>
             </div>

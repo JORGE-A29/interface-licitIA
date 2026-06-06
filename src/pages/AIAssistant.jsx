@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import {
   Bot, Send, Paperclip, Sparkles,
   FileText, CheckCircle, XCircle, AlertTriangle,
@@ -27,16 +28,15 @@ const SUGGESTIONS = [
 
 const AnalysisCard = ({ data }) => {
   const icons = {
-    viable:     <CheckCircle size={20} />,
+    viable:      <CheckCircle size={20} />,
     'no-viable': <XCircle size={20} />,
-    parcial:    <AlertTriangle size={20} />,
+    parcial:     <AlertTriangle size={20} />,
   };
   const labels = {
-    viable:     '✅ Licitación VIABLE',
+    viable:      '✅ Licitación VIABLE',
     'no-viable': '❌ Licitación NO VIABLE',
-    parcial:    '⚠️ Viabilidad PARCIAL',
+    parcial:     '⚠️ Viabilidad PARCIAL',
   };
-
   return (
     <div className={`analysis-card ${data.verdict}`}>
       <div className={`analysis-header ${data.verdict}`}>
@@ -51,49 +51,27 @@ const AnalysisCard = ({ data }) => {
       </div>
       <div className="analysis-body">
         <div className="analysis-meta">
-          <div className="analysis-meta-item">
-            <span className="meta-label">Entidad</span>
-            <span className="meta-value">{data.entity}</span>
-          </div>
-          <div className="analysis-meta-item">
-            <span className="meta-label">Valor estimado</span>
-            <span className="meta-value">{data.value}</span>
-          </div>
-          <div className="analysis-meta-item">
-            <span className="meta-label">Cierre</span>
-            <span className="meta-value">{data.deadline}</span>
-          </div>
+          <div className="analysis-meta-item"><span className="meta-label">Entidad</span><span className="meta-value">{data.entity}</span></div>
+          <div className="analysis-meta-item"><span className="meta-label">Valor estimado</span><span className="meta-value">{data.value}</span></div>
+          <div className="analysis-meta-item"><span className="meta-label">Cierre</span><span className="meta-value">{data.deadline}</span></div>
         </div>
         <div className="analysis-divider" />
         <div className="analysis-section">
           <h5>Factores positivos</h5>
           <div className="analysis-items">
-            {data.pros.map((p, i) => (
-              <div className="analysis-item positive" key={i}>
-                <div className="analysis-item-dot" />
-                <span>{p}</span>
-              </div>
-            ))}
+            {data.pros.map((p, i) => <div className="analysis-item positive" key={i}><div className="analysis-item-dot" /><span>{p}</span></div>)}
           </div>
         </div>
         <div className="analysis-section">
           <h5>Factores de riesgo</h5>
           <div className="analysis-items">
-            {data.cons.map((c, i) => (
-              <div className="analysis-item negative" key={i}>
-                <div className="analysis-item-dot" />
-                <span>{c}</span>
-              </div>
-            ))}
+            {data.cons.map((c, i) => <div className="analysis-item negative" key={i}><div className="analysis-item-dot" /><span>{c}</span></div>)}
           </div>
         </div>
         <div className="analysis-divider" />
         <div className="analysis-section">
           <h5>Recomendación</h5>
-          <div className="analysis-item neutral">
-            <div className="analysis-item-dot" />
-            <span>{data.recommendation}</span>
-          </div>
+          <div className="analysis-item neutral"><div className="analysis-item-dot" /><span>{data.recommendation}</span></div>
         </div>
       </div>
     </div>
@@ -101,14 +79,43 @@ const AnalysisCard = ({ data }) => {
 };
 
 const AIAssistant = () => {
+  const [searchParams] = useSearchParams();
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
-  const [historial, setHistorial] = useState([]);
+  const [conversacionId, setConversacionId] = useState(null);
   const [pendingPdf, setPendingPdf] = useState(null);
   const [isTyping, setIsTyping] = useState(false);
+  const [cargando, setCargando] = useState(false);
   const messagesEndRef = useRef(null);
   const fileInputRef = useRef(null);
   const textareaRef = useRef(null);
+
+  // Cargar conversación existente si viene desde el historial
+  useEffect(() => {
+    const idParam = searchParams.get('conversacion');
+    if (!idParam) return;
+
+    const cargarConversacion = async () => {
+      setCargando(true);
+      try {
+        const res = await api.get(`/asistente/conversaciones/${idParam}`);
+        const conv = res.data.conversacion;
+        setConversacionId(conv._id);
+        const msgs = conv.mensajes.map(m => ({
+          id: uid(),
+          role: m.role === 'assistant' ? 'ai' : 'user',
+          text: m.content,
+          time: new Date(m.fecha).toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' }),
+        }));
+        setMessages(msgs);
+      } catch {
+        // Si falla, inicia conversación nueva
+      } finally {
+        setCargando(false);
+      }
+    };
+    cargarConversacion();
+  }, [searchParams]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -125,44 +132,35 @@ const AIAssistant = () => {
     setMessages(prev => [...prev, { ...msg, id: uid(), time: now() }]);
   }, []);
 
-  // Chat via backend /api/asistente/chat
   const callAsistente = useCallback(async (texto) => {
     const response = await api.post('/asistente/chat', {
       mensaje: texto,
-      historial,
+      conversacion_id: conversacionId,
     });
-    const respuesta = response.data.respuesta;
-    setHistorial(prev => [
-      ...prev,
-      { role: 'user', content: texto },
-      { role: 'assistant', content: respuesta },
-    ]);
-    return respuesta;
-  }, [historial]);
+    if (response.data.conversacion_id && !conversacionId) {
+      setConversacionId(response.data.conversacion_id);
+    }
+    return response.data.respuesta;
+  }, [conversacionId]);
 
-  // Analyze PDF via backend /api/asistente/analizar
   const analyzePdf = useCallback(async (file) => {
     const text = await file.text().catch(() => '');
     const response = await api.post('/asistente/analizar', {
       pliego: text || file.name,
     });
     const resultado = response.data.resultado || '';
-
-    // Parse verdict from markdown response
     const lower = resultado.toLowerCase();
     const verdict = lower.includes('no viable') || lower.includes('no cumple')
       ? 'no-viable'
       : lower.includes('parcial') || lower.includes('riesgo')
       ? 'parcial'
       : 'viable';
-
     return {
       verdict,
       score: verdict === 'viable' ? 78 : verdict === 'parcial' ? 52 : 30,
       title: file.name.replace('.pdf', ''),
       entity: 'Ver análisis completo',
-      value: '',
-      deadline: '',
+      value: '', deadline: '',
       pros: ['Análisis completado por LicitIA'],
       cons: [],
       recommendation: resultado,
@@ -173,14 +171,9 @@ const AIAssistant = () => {
     const text = input.trim();
     if (!text && !pendingPdf) return;
 
-    if (pendingPdf) {
-      addMessage({
-        role: 'user',
-        pdf: { name: pendingPdf.name, size: fmtSize(pendingPdf.size) },
-        text: text || undefined,
-      });
+    if (pendingPdf && !text) {
+      addMessage({ role: 'user', pdf: { name: pendingPdf.name, size: fmtSize(pendingPdf.size) } });
       setPendingPdf(null);
-      setInput('');
       return;
     }
 
@@ -203,13 +196,7 @@ const AIAssistant = () => {
     if (!pendingPdf) return;
     const file = pendingPdf;
     setPendingPdf(null);
-
-    addMessage({
-      role: 'user',
-      pdf: { name: file.name, size: fmtSize(file.size) },
-      text: 'Por favor analiza esta licitación y dime si es viable.',
-    });
-
+    addMessage({ role: 'user', pdf: { name: file.name, size: fmtSize(file.size) }, text: 'Por favor analiza esta licitación y dime si es viable.' });
     setIsTyping(true);
     try {
       const result = await analyzePdf(file);
@@ -223,30 +210,26 @@ const AIAssistant = () => {
 
   const handleFileChange = (e) => {
     const file = e.target.files?.[0];
-    if (file && file.type === 'application/pdf') {
-      setPendingPdf(file);
-    }
+    if (file && file.type === 'application/pdf') setPendingPdf(file);
     e.target.value = '';
   };
 
   const handleKeyDown = (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleSend();
-    }
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); }
   };
 
   const clearConversation = () => {
     setMessages([]);
-    setHistorial([]);
+    setConversacionId(null);
     setPendingPdf(null);
     setInput('');
   };
 
-  const handleSuggestion = (text) => {
-    setInput(text);
-    textareaRef.current?.focus();
-  };
+  if (cargando) return (
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '60vh', color: '#6b7280' }}>
+      Cargando conversación...
+    </div>
+  );
 
   return (
     <div className="ai-assistant-page">
@@ -257,7 +240,9 @@ const AIAssistant = () => {
             <h2>Asistente LicitIA</h2>
             <div className="ai-status">
               <div className="ai-status-dot" />
-              <span>En línea · Especialista en licitaciones</span>
+              <span>
+                {conversacionId ? 'Conversación guardada automáticamente' : 'En línea · Especialista en licitaciones'}
+              </span>
             </div>
           </div>
         </div>
@@ -275,13 +260,10 @@ const AIAssistant = () => {
           <div className="ai-welcome">
             <div className="ai-welcome-icon"><Sparkles size={32} /></div>
             <h3>¿En qué te puedo ayudar?</h3>
-            <p>
-              Soy tu asistente experto en licitaciones públicas colombianas.
-              Puedo responder tus preguntas o analizar documentos de licitación.
-            </p>
+            <p>Soy tu asistente experto en licitaciones públicas colombianas.</p>
             <div className="ai-suggestions">
               {SUGGESTIONS.map((s, i) => (
-                <button key={i} className="ai-suggestion-chip" onClick={() => handleSuggestion(s)}>
+                <button key={i} className="ai-suggestion-chip" onClick={() => { setInput(s); textareaRef.current?.focus(); }}>
                   {s}
                 </button>
               ))}
@@ -303,11 +285,7 @@ const AIAssistant = () => {
                     </div>
                   </div>
                 )}
-                {msg.text && (
-                  <div className="bubble-content" style={{ whiteSpace: 'pre-wrap' }}>
-                    {msg.text}
-                  </div>
-                )}
+                {msg.text && <div className="bubble-content" style={{ whiteSpace: 'pre-wrap' }}>{msg.text}</div>}
                 {msg.analysis && <AnalysisCard data={msg.analysis} />}
                 <span className="bubble-time">{msg.time}</span>
               </div>
@@ -319,9 +297,7 @@ const AIAssistant = () => {
             <div className="message-avatar ai-msg"><Bot size={16} /></div>
             <div className="message-bubble">
               <div className="typing-indicator">
-                <div className="typing-dot" />
-                <div className="typing-dot" />
-                <div className="typing-dot" />
+                <div className="typing-dot" /><div className="typing-dot" /><div className="typing-dot" />
               </div>
             </div>
           </div>
@@ -350,19 +326,12 @@ const AIAssistant = () => {
             rows={1}
           />
           <div className="ai-input-actions">
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="application/pdf"
-              style={{ display: 'none' }}
-              onChange={handleFileChange}
-            />
+            <input ref={fileInputRef} type="file" accept="application/pdf" style={{ display: 'none' }} onChange={handleFileChange} />
             <button className="ai-upload-btn" title="Subir PDF" onClick={() => fileInputRef.current?.click()} disabled={isTyping}>
               <Paperclip size={18} />
             </button>
             <button className="ai-analyze-btn" title="Analizar PDF" onClick={handleAnalyze} disabled={!pendingPdf || isTyping}>
-              <TrendingUp size={15} />
-              <span>Analizar</span>
+              <TrendingUp size={15} /><span>Analizar</span>
             </button>
             <button className="ai-send-btn" title="Enviar" onClick={handleSend} disabled={(!input.trim() && !pendingPdf) || isTyping}>
               <Send size={16} />
